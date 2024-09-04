@@ -14,6 +14,7 @@ const io = new Server(server);
 
 const globalErrorHandler = require("./midddelware/error");
 const userRoute = require("./route/userRoute");
+const AppError = require("./utils/customError");
 
 app.use(express.json());
 app.use(cors("*"));
