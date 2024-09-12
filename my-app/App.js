@@ -22,7 +22,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <GlobalContextProvider>
-        <StripeProvider publishableKey="pk_test_51PQFreRvJI1ePtmLcNj1cfOWDLO7hiiJ7We2fNJxyAOOrqDse9wNZSvxSII3f6PyDBIz4LakPITeYQGaRfrM4rb900i2aZENEZ">
+        <StripeProvider publishableKey="pk_test_51OvmpoEWhpY7ASOw4YwOtVI4czVFxUxKVmrbuJkkTY7xrgHWzwFzlYaG92GHB4uQsPBPlSA1oUkMvgunyVe8ZRio00fevIPiwK">
           <NavigationContainer>
             <Stack.Navigator initialRouteName="home">
               <Stack.Screen name="payment" component={PaymentScreen} />
