@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 exports.registerUser = async (req, res, next) => {
   try {
     const { name, email, password, userType } = req.body;
-    // console.log(name, email, password, userType);
+    console.log(name, email, password, userType);
     if (!name || !email || !userType || !password) {
       return next(new AppError("Please fill out all fields", 400));
     }
@@ -28,21 +28,37 @@ exports.registerUser = async (req, res, next) => {
 exports.getAllUser = async (req, res, next) => {
   try {
     const { userType } = req.body;
-    console.log(userType.toLocaleLowerCase(), "userType");
-    if (userType.toLocaleLowerCase() === "user") {
-      const users = await User.find({ userType: ["rider", "user"] });
-      // console.log(users, "users");
-      res.status(200).json({
-        status: "success",
-        data: users,
-      });
-    } else {
-      const users = await User.find({ userType: ["user", "rider"] });
-      res.status(200).json({
-        status: "success",
-        data: users,
+    console.log(userType, "user type");
+    // Validate userType
+    if (!userType) {
+      return res.status(400).json({
+        status: "fail",
+        message: "userType is required",
       });
     }
+
+    const lowerCaseUserType = userType.toLocaleLowerCase();
+
+    // Define the opposite userType
+    let oppositeUserType;
+    if (lowerCaseUserType === "user") {
+      oppositeUserType = "rider";
+    } else if (lowerCaseUserType === "rider") {
+      oppositeUserType = "user";
+    } else {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid userType provided",
+      });
+    }
+
+    // Fetch users based on the opposite userType
+    const users = await User.find({ userType: oppositeUserType });
+
+    res.status(200).json({
+      status: "success",
+      data: users,
+    });
   } catch (err) {
     return next(new AppError(err.message, 500));
   }
@@ -71,7 +87,7 @@ exports.getUserLocation = async (req, res, next) => {
       // Save the updated user document
       await user.save();
 
-      console.log(user, "user");
+      // console.log(user, "user");
       res.status(200).json({
         status: "success",
         data: user,
@@ -109,5 +125,19 @@ exports.loginUser = async (req, res, next) => {
     });
   } catch (err) {
     return next(new AppError(err.message, 500));
+  }
+};
+
+exports.toggleType = async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(id, "user id");
+    const user = await User.findByIdAndUpdate(id, { userType: req.body.userType }, { new: true });
+    res.status(200).json({
+      status: "success",
+      data: user,
+    });
+  } catch (err) {
+    console.log(err);
   }
 };

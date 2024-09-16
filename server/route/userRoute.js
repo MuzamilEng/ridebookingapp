@@ -6,9 +6,11 @@ const {
   getAllUser,
   getUserLocation,
   loginUser,
-} = require("../controller/register");
+  toggleType,
+} = require("../controllers/register");
 router.route("/registerUser").post(registerUser);
 router.route("/getUsers").post(getAllUser);
 router.route("/getUserLocation").post(getUserLocation);
 router.route("/login").post(loginUser);
+router.route("/toggleType/:id").put(toggleType);
 module.exports = router;
