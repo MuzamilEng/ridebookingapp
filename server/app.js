@@ -6,7 +6,7 @@ const userRoute = require("./route/userRoute");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY || 'sk_test_51OvmpoEWhpY7ASOwvNgGtQQjqmdRh7122hFErJdTdZYe0wHbH76F2LMPAinNKrzUiUylrWcgmY2z8rTfg2PhYa0t00rUDiCsE2');
 
 // Middleware
-app.use(cors("*"));
+app.use(cors("*"));   
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", createBooking);
 app.use("/api/v1", userRoute);
 
-app.post('/create-payment-intent', async (req, res) => {
+app.post('/payment-sheet', async (req, res) => {
   try {
     const { amount, currency } = req.body;
     
