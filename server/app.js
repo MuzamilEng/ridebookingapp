@@ -3,53 +3,51 @@ const app = express();
 const cors = require("cors");
 const createBooking = require("./route/bookingRoute");
 const userRoute = require("./route/userRoute");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY|| 'sk_test_51OvmpoEWhpY7ASOwvNgGtQQjqmdRh7122hFErJdTdZYe0wHbH76F2LMPAinNKrzUiUylrWcgmY2z8rTfg2PhYa0t00rUDiCsE2');
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY || 'sk_test_51OvmpoEWhpY7ASOwvNgGtQQjqmdRh7122hFErJdTdZYe0wHbH76F2LMPAinNKrzUiUylrWcgmY2z8rTfg2PhYa0t00rUDiCsE2');
+
 // Middleware
-app.use(cors("*")); // Allow cross-origin requests
-app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(cors("*"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/v1", createBooking);
-
-// Error handler
 app.use("/api/v1", userRoute);
-app.post('/payment-sheet', async (req, res) => {
-  try {
-    const { amount } = req.body; // Amount in pence (e.g., 950 for £9.50)
 
-    if (typeof amount !== 'number' || amount <= 0) {
-      return res.status(400).send('Invalid amount');
+app.post('/create-payment-intent', async (req, res) => {
+  try {
+    const { amount, currency } = req.body;
+    
+    // Validate input
+    if (!amount || !currency || typeof amount !== 'number' || amount <= 0) {
+      return res.status(400).json({ error: 'Invalid amount or currency' });
     }
 
-    // Create a Checkout Session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [{
-        price_data: {
-          currency: 'usd', // Currency in GBP
-          product_data: {
-            name: 'Service Payment',
-          },
-          unit_amount: amount, // Amount in pence
-        },
-        quantity: 1,
-      }],
-      mode: 'payment',
-      // success_url: `http://localhost:5173/`,
-      // cancel_url: `http://localhost:5173/`,
+    // Create a PaymentIntent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // Convert to cents and ensure it's an integer
+      currency: currency.toLowerCase(),
+      automatic_payment_methods: {
+        enabled: true,
+      },
     });
 
-    // Respond with the sessionId
-    res.json({ sessionId: session.id });
+    // Send the PaymentIntent client secret to the client
+    res.json({
+      paymentIntent: paymentIntent.client_secret,
+      publishableKey: process.env.STRIPE_PUBLISHABLE_KEY
+    });
   } catch (error) {
-    console.error('Error creating Checkout Session:', error);
-    res.status(500).send('Internal Server Error');
+    console.error('Error creating PaymentIntent:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+
 app.all("*", (req, res) => {
   res.status(404).send("Not Found");
 });
+
 app.use(require("./error/errorMiddelware"));
 
 module.exports = app;
