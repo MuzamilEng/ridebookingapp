@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema(
     long: {
       type: String,
     },
+    status:{
+      type: String,
+     default:'online'
+    }
   },
   { timestamps: true }
 );

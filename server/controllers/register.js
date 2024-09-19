@@ -131,7 +131,8 @@ exports.loginUser = async (req, res, next) => {
 exports.toggleType = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(id, "user id");
+    console.log('abc')
+    console.log(id,req.body.userType, "user id type");
     const user = await User.findByIdAndUpdate(id, { userType: req.body.userType }, { new: true });
     res.status(200).json({
       status: "success",
@@ -141,3 +142,23 @@ exports.toggleType = async (req, res) => {
     console.log(err);
   }
 };
+
+exports.toggleStatus = async (req, res, next) => {
+  try{
+    const {status,id} = req.body;
+    // console.log(status,id,'status id');
+    const user = await User.findById(id)
+    if(!user){
+      return next(new AppError('User not found',400))
+    }
+    user.status = status;
+    await user.save();
+    res.status(200).json({
+      status:'success',
+      data:user
+    })
+  }catch(err){
+    console.log(err);
+    return next(new AppError(err.message, 500));
+  }
+}
