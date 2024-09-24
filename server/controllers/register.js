@@ -3,20 +3,33 @@ const AppError = require("../utils/customError");
 const jwt = require("jsonwebtoken");
 exports.registerUser = async (req, res, next) => {
   try {
-    const { name, email, password, userType } = req.body;
-    console.log(name, email, password, userType);
+    const { name, email, password, userType ,long,lat} = req.body;
+
+    // Check if required fields are provided
     if (!name || !email || !userType || !password) {
+      console.log(req.body);
       return next(new AppError("Please fill out all fields", 400));
     }
+    console.log(name, email, password,long,lat, 'hybrid');
+
+    // Set the trial period (1 minute)
+const startTrial = new Date(); // current date     
+    
+const endTrial = new Date(startTrial.getTime() + 30 * 60 * 1000); // 30 
+
+    // Create the user with the trial dates
     const user = await User.create({
       name,
       email,
       password,
       userType,
-      // longitude,
-      // latitude,
+      startTrial,
+      endTrial,
+      long,
+      lat
     });
 
+    // Send the response back
     res.status(200).json({
       status: "success",
       data: user,
@@ -25,6 +38,8 @@ exports.registerUser = async (req, res, next) => {
     return next(new AppError(err.message, 500));
   }
 };
+
+
 exports.getAllUser = async (req, res, next) => {
   try {
     const { userType } = req.body;
@@ -67,7 +82,7 @@ exports.getAllUser = async (req, res, next) => {
 exports.getUserLocation = async (req, res, next) => {
   try {
     const { id, long, lat } = req.body;
-    // console.log(id, "user id", long, lat);
+    console.log(id, "user id h wod oqwjdoqwjdqw", long, lat);
 
     if (id) {
       // Use findOne() instead of find() to get a single document
@@ -107,6 +122,7 @@ exports.loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     console.log(email, password, "eeee ppp");
+    console.log(req.body,'bbboooddy')
     if (!email || !password) {
       return next(new AppError("Please fill out all fields", 400));
     }
@@ -130,9 +146,10 @@ exports.loginUser = async (req, res, next) => {
 
 exports.toggleType = async (req, res) => {
   try {
+    
     const id = req.params.id;
     console.log('abc')
-    console.log(id,req.body.userType, "user id type");
+    console.log(id,req.body, "user id type");
     const user = await User.findByIdAndUpdate(id, { userType: req.body.userType }, { new: true });
     res.status(200).json({
       status: "success",
@@ -153,6 +170,24 @@ exports.toggleStatus = async (req, res, next) => {
     }
     user.status = status;
     await user.save();
+    res.status(200).json({
+      status:'success',
+      data:user
+    })
+  }catch(err){
+    console.log(err);
+    return next(new AppError(err.message, 500));
+  }
+}
+
+
+exports.subscription = async (req,res,next)=>{
+  try{
+    const {id} = req.body;
+    const user = await User.findByIdAndUpdate(id, { subscription: 'active' }, { new: true });
+    if(!user){
+      return next(new AppError('User not found',400))
+    }
     res.status(200).json({
       status:'success',
       data:user

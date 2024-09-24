@@ -26,6 +26,22 @@ const userSchema = new mongoose.Schema(
     long: {
       type: String,
     },
+    startTrial: {
+      type: String,
+      // required: true,
+    },
+    endTrial: {
+      type: String,
+      // required: true,
+    },
+    valid:{
+      type:String,
+      default:'valid'
+    },
+    subscription:{
+      type: String,
+      default:'inactive'
+    },
     status:{
       type: String,
      default:'online'
