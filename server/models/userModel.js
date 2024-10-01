@@ -12,6 +12,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true, // Ensure email uniqueness
     },
+    phoneNumber:{
+      type: String,
+      required: true,
+      // unique: true, // Ensure phone number uniqueness
+    },
     userType: {
       type: String,
       required: true,

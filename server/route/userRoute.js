@@ -9,6 +9,9 @@ const {
   toggleType,
   toggleStatus,
   subscription,
+  jazzCash,
+  verifyPayment,
+  addPhone,
 } = require("../controllers/register");
 const { checkTrial } = require("../midddelware/checkTrial");
 router.route("/registerUser").post(registerUser);
@@ -18,4 +21,7 @@ router.route("/login").post(loginUser);
 router.route("/toggleType/:id").put(checkTrial,toggleType);
 router.route('/toggleStatus').put(checkTrial,toggleStatus);
 router.route('/subscription').put(subscription)
+router.route('/jazzCash').post(jazzCash);
+router.route('/verify-payment').post(verifyPayment)
+router.route('/addPhone').post(addPhone);
 module.exports = router;
