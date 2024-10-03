@@ -166,10 +166,11 @@ exports.toggleType = async (req, res) => {
 exports.toggleStatus = async (req, res, next) => {
   try{
     const {status,id} = req.body;
-    // console.log(status,id,'status id');
+    console.log(status,id,'status id');
     const user = await User.findById(id)
     if(!user){
-      return next(new AppError('User not found',400))
+      console.log(req.body,'body')
+      return next(new AppError('User not found ssss',400))
     }
     user.status = status;
     await user.save();
