@@ -5,19 +5,18 @@ const axios = require('axios');
 const crypto = require('crypto');
 exports.registerUser = async (req, res, next) => {
   try {
-    const { name, email, password, userType ,long,lat,number} = req.body;
+    const { name, email, password, userType, long, lat, number } = req.body;
 
     // Check if required fields are provided
-    if (!name || !email || !userType || !password  || !number) {
+    if (!name || !email || !userType || !password || !number) {
       console.log(req.body);
       return next(new AppError("Please fill out all fields", 400));
     }
-    console.log(name, email, password,long,lat, 'hybrid');
+    console.log(name, email, password, long, lat, 'hybrid');
 
-    // Set the trial period (1 minute)
-const startTrial = new Date(); // current date     
-    
-const endTrial = new Date(startTrial.getTime() + 30 * 60 * 1000); // 30 
+    // Set the trial period (7 days)
+    const startTrial = new Date(); // current date
+    const endTrial = new Date(startTrial.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days in milliseconds
 
     // Create the user with the trial dates
     const user = await User.create({
@@ -29,7 +28,7 @@ const endTrial = new Date(startTrial.getTime() + 30 * 60 * 1000); // 30
       endTrial,
       long,
       lat,
-      phoneNumber:number,
+      phoneNumber: number,
     });
 
     // Send the response back
