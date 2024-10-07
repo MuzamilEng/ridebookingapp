@@ -12,8 +12,12 @@ exports.registerUser = async (req, res, next) => {
       console.log(req.body);
       return next(new AppError("Please fill out all fields", 400));
     }
-    console.log(name, email, password, long, lat, 'hybrid');
 
+    // Check if user already exists
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return next(new AppError("User already exists", 400));
+    }
     // Set the trial period (7 days)
     const startTrial = new Date(); // current date
     const endTrial = new Date(startTrial.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days in milliseconds
