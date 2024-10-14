@@ -11,7 +11,7 @@ const {
   subscription,
   jazzCash,
   verifyPayment,
-  addPhone,
+  addPhone,updateUser
 } = require("../controllers/register");
 const { checkTrial } = require("../midddelware/checkTrial");
 router.route("/registerUser").post(registerUser);
@@ -24,4 +24,5 @@ router.route('/subscription').put(subscription)
 router.route('/jazzCash').post(jazzCash);
 router.route('/verify-payment').post(verifyPayment)
 router.route('/addPhone').post(addPhone);
+router.route('/updateUser').put(updateUser)
 module.exports = router;
