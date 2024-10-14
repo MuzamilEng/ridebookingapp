@@ -12,12 +12,8 @@ exports.registerUser = async (req, res, next) => {
       console.log(req.body);
       return next(new AppError("Please fill out all fields", 400));
     }
+    console.log(name, email, password, long, lat, 'hybrid');
 
-    // Check if user already exists
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return next(new AppError("User already exists", 400));
-    }
     // Set the trial period (7 days)
     const startTrial = new Date(); // current date
     const endTrial = new Date(startTrial.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days in milliseconds
@@ -304,6 +300,27 @@ exports.addPhone = async(req,res,next)=>{
       await user.save()
     }
     
+    res.status(200).json({
+      status:'success',
+      data:user
+    })
+  }catch(err){
+    console.log(err);
+    return next(new AppError(err.message, 500));
+  }
+}
+
+exports.updateUser = async (req,res,next)=>{
+  try{
+    const {id,name,email,phoneNumber} = req.body
+    console.log(req.body,'body   hgjgj')
+    console.log(id,name,email,phoneNumber,'id name email phone');
+
+    const user = await User.findByIdAndUpdate(req.body.id,{name:req.body.name,email:req.body.email,phoneNumber:req.body.phoneNumber}, { new: true });
+    if(!user){
+      console.log('User not found')
+      return next(new AppError('User not found', 400));
+    }
     res.status(200).json({
       status:'success',
       data:user
